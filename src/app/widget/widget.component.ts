@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Task } from '../task.model';
 import { WidgetDataService } from './widget-data.service';
 import { WidgetErrorComponent } from './widget-error/widget-error.component';
@@ -23,11 +23,23 @@ export class WidgetComponent implements OnInit {
   constructor(private widgetData: WidgetDataService) { }
 
   ngOnInit(): void {
-    this.tasks$ = this.widgetData.load();
+    this.tasks$ = this.widgetData.load().pipe(
+      tap({error: (error)=> {
+        this.error = error;
+      }})
+    )
   }
 
   addTask() {
     // unreliable method
-    this.widgetData.addTaskSync({ id: 0, title: 'New Task' });
+    try {
+      setTimeout(() => {
+        this.widgetData.addTaskSync({ id: 0, title: 'New Task' });
+      }, 3000);
+    } catch (e) {
+      if (e instanceof Error)
+        this.error = e;
+      throw this.error;
+    }
   }
 }
