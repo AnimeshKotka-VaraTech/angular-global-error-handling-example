@@ -42,4 +42,12 @@ export class WidgetComponent implements OnInit {
       throw this.error;
     }
   }
+
+  connect() {
+    this.widgetData.connect();
+  }
+
+  disconnect() {
+    this.widgetData.disconnect();
+  }
 }
